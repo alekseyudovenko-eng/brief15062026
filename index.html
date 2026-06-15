@@ -1,466 +1,506 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Market Intelligence Report | June 2026</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        :root {
-            --bg-body: #0b0c10;
-            --bg-surface: #121418;
-            --bg-card: #181a1f;
-            --bg-hover: #1f2228;
-            --border: #2a2d35;
-            --text-primary: #e8eaed;
-            --text-secondary: #9aa0a6;
-            --text-muted: #5f6368;
-            --accent: #4a5568;
-            --accent-border: #3d4654;
-            --status-green: #2e7d32;
-            --status-bg-green: rgba(46, 125, 50, 0.15);
-            --status-red: #c62828;
-            --status-bg-red: rgba(198, 40, 40, 0.15);
-            --status-amber: #b45309;
-            --status-bg-amber: rgba(180, 83, 9, 0.15);
-            --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --radius: 6px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            font-family: var(--font);
-            background: var(--bg-body);
-            color: var(--text-primary);
-            line-height: 1.6;
-            font-size: 14px;
-            padding: 0;
-        }
-
-        .container { max-width: 850px; margin: 0 auto; padding: 16px; }
-        
-        /* Header */
-        .header {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-        .header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; color: var(--text-primary); }
-        .header-meta { display: flex; flex-direction: column; gap: 4px; text-align: right; }
-        .header-sub { color: var(--text-secondary); font-size: 13px; }
-        .header-date { color: var(--text-muted); font-size: 12px; font-weight: 500; }
-        .lang-switch { display: flex; gap: 6px; margin-top: 4px; justify-content: flex-end; }
-        .lang-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            padding: 4px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .lang-btn.active { background: var(--bg-hover); color: var(--text-primary); border-color: var(--accent-border); }
-
-        /* Sections */
-        .section {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow);
-        }
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.2px;
-        }
-        .section-title::before {
-            content: '';
-            width: 3px;
-            height: 16px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        /* Summary & Trends */
-        .exec-summary {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 16px;
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        .trend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-        .trend-card {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            transition: border-color 0.2s;
-        }
-        .trend-card:hover { border-color: var(--accent-border); }
-        .trend-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            letter-spacing: 0.3px;
-        }
-        .badge-bearish { background: var(--status-bg-red); color: var(--status-red); border: 1px solid rgba(198,40,40,0.3); }
-        .badge-warning { background: var(--status-bg-amber); color: var(--status-amber); border: 1px solid rgba(180,83,9,0.3); }
-        .badge-bullish { background: var(--status-bg-green); color: var(--status-green); border: 1px solid rgba(46,125,50,0.3); }
-        .badge-neutral { background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border); }
-        .trend-title { font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-size: 13px; }
-        .trend-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-
-        /* Charts & Tables */
-        .chart-wrapper {
-            background: var(--bg-surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 14px;
-            margin: 14px 0;
-            position: relative;
-            height: 260px;
-        }
-        .data-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
-        .data-table th, .data-table td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); }
-        .data-table th { color: var(--text-secondary); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; background: transparent; }
-        .data-table tr:last-child td { border-bottom: none; }
-        .data-table tr:hover td { background: var(--bg-hover); }
-        
-        .price-change { padding: 2px 6px; border-radius: 3px; font-weight: 600; font-size: 11px; }
-        .price-down { background: var(--status-bg-red); color: var(--status-red); }
-        .price-up { background: var(--status-bg-green); color: var(--status-green); }
-
-        /* Regions & Cards */
-        .region-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 14px; }
-        .region-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
-        .region-card h3 { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; border-left: 2px solid var(--accent); padding-left: 8px; }
-        .region-card p { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-        
-        .highlight-box {
-            background: var(--bg-surface);
-            border-left: 3px solid var(--accent);
-            padding: 12px;
-            border-radius: 0 var(--radius) var(--radius) 0;
-            margin: 12px 0;
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        .highlight-box strong { color: var(--text-primary); font-weight: 600; }
-
-        /* Logistics Compare */
-        .logistics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
-        .logistics-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; }
-        .logistics-card.primary { border-color: var(--accent-border); background: linear-gradient(180deg, var(--bg-hover) 0%, var(--bg-surface) 100%); }
-        .logistics-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); }
-        .logistics-metric { font-size: 22px; font-weight: 700; color: var(--text-primary); margin: 4px 0; letter-spacing: -0.5px; }
-        .logistics-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .logistics-note { font-size: 11px; color: var(--text-secondary); margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
-
-        /* Footer */
-        .footer { text-align: center; padding: 20px 0; color: var(--text-muted); font-size: 11px; border-top: 1px solid var(--border); margin-top: 16px; }
-
-        @media (max-width: 600px) {
-            .header { flex-direction: column; align-items: flex-start; }
-            .header-meta { text-align: left; }
-            .section { padding: 16px; }
-            .trend-grid, .region-grid, .logistics-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Extended Weekly Update 15.06.2026 – Veg Oils & Fats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      padding: 12px 14px 24px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f1115;
+      color: #f5f5f5;
+      line-height: 1.5;
+      font-size: 15px;
+    }
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      margin: 0.7em 0 0.4em;
+      line-height: 1.2;
+    }
+    h1 {
+      font-size: 20px;
+      color: #ffd166;
+    }
+    h2 {
+      font-size: 17px;
+      color: #fca311;
+      border-left: 3px solid #fca311;
+      padding-left: 8px;
+    }
+    h3 {
+      font-size: 15px;
+      color: #e0e0e0;
+    }
+    p {
+      margin: 0 0 0.6em;
+    }
+    .tagline {
+      font-size: 12px;
+      color: #9ea3b0;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.8em;
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #1e2530;
+      color: #cfd2dc;
+      margin: 0 4px 4px 0;
+    }
+    .lang-switch {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+    .lang-btn {
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 1px solid #343a46;
+      background: #181b21;
+      color: #cfd2dc;
+    }
+    .lang-btn.active {
+      background: #fca311;
+      border-color: #fca311;
+      color: #101015;
+      font-weight: 600;
+    }
+    .lang-block {
+      display: none;
+    }
+    .lang-block.active {
+      display: block;
+    }
+    .card {
+      background: #181b21;
+      border-radius: 10px;
+      padding: 10px 10px 8px;
+      margin: 10px 0;
+      border: 1px solid #262c37;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #f5f5f5;
+    }
+    .card-list {
+      padding-left: 16px;
+      margin: 0;
+    }
+    .card-list li {
+      margin-bottom: 4px;
+    }
+    .table-scroll {
+      overflow-x: auto;
+      margin: 8px 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 280px;
+      font-size: 12px;
+    }
+    th, td {
+      border: 1px solid #303745;
+      padding: 6px 6px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background: #1f2530;
+      font-weight: 600;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 6px;
+      background: #233044;
+      color: #ced4e2;
+    }
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ea3b0;
+      margin-top: 1.2em;
+    }
+    a {
+      color: #8ab4ff;
+      text-decoration: none;
+    }
+    a:active {
+      opacity: 0.7;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div>
-                <h1 data-en="📊 Vegetable Oils & Fats Market Report" data-ru="📊 Отчет: Рынок растительных масел и жиров"></h1>
-                <div class="header-sub" data-en="Regional Coverage: EU-27, UK, Balkans, Central Asia, Caucasus" data-ru="География: ЕС-27, Великобритания, Балканы, ЦА, Кавказ"></div>
-            </div>
-            <div class="header-meta">
-                <div class="header-date" data-en="📅 June 7 – 14, 2026" data-ru="📅 7 – 14 июня 2026"></div>
-                <div class="lang-switch">
-                    <button class="lang-btn active" onclick="switchLang('en')">EN</button>
-                    <button class="lang-btn" onclick="switchLang('ru')">RU</button>
-                </div>
-            </div>
-        </div>
+<div class="wrap">
 
-        <div class="section">
-            <div class="section-title" data-en="I. Executive Summary" data-ru="I. Краткое содержание"></div>
-            <div class="exec-summary">
-                <span data-en="In June 2026, the vegetable oil market shows a pronounced correction due to oversupply from South America and active Asian export policies. For Central Asia and Caucasus, the key trend is shifting from simple processing to deep global integration requiring strict EUDR compliance." 
-                      data-ru="В июне 2026 года рынок демонстрирует коррекцию из-за переизбытка из Южной Америки и активной экспортной политики Азии. Для ЦА и Кавказа ключевой тренд — переход от простой переработки к глубокой интеграции в цепочки, требующей строгого соблюдения EUDR."></span>
-            </div>
-            <div class="trend-grid">
-                <div class="trend-card">
-                    <span class="trend-badge badge-bearish" data-en="▼ Bearish" data-ru="▼ Медвежий"></span>
-                    <div class="trend-title" data-en="Global Price Normalization" data-ru="Глобальная нормализация цен"></div>
-                    <div class="trend-text" data-en="Shift towards bearish trend in palm/soy oils due to record SA harvests and Indonesia policy adjustments." data-ru="Сдвиг к медвежьему тренду по пальмовому/соевому маслу из-за рекордных урожаев в ЮА и корректировок политики Индонезии."></div>
-                </div>
-                <div class="trend-card">
-                    <span class="trend-badge badge-warning" data-en="⚠ Risk Premium" data-ru="⚠ Премия за риск"></span>
-                    <div class="trend-title" data-en="Logistics Risk Premium" data-ru="Логистическая премия за риск"></div>
-                    <div class="trend-text" data-en="Persistent divergence between high Black Sea delivery costs and optimism over RU/UA harvest forecasts." data-ru="Разрыв между высокими затратами на доставку в Черном море и оптимизмом по урожаям РФ/Украина."></div>
-                </div>
-                <div class="trend-card">
-                    <span class="trend-badge badge-bullish" data-en="▲ Transformation" data-ru="▲ Трансформация"></span>
-                    <div class="trend-title" data-en="Regional Industrial Transformation" data-ru="Региональная трансформация"></div>
-                    <div class="trend-text" data-en="CA & Caucasus pivot from import dependency to localized value-added processing (refined oil, meal)." data-ru="ЦА и Кавказ переходят от импорта к локализованной переработке с добавленной стоимостью."></div>
-                </div>
-                <div class="trend-card">
-                    <span class="trend-badge badge-neutral" data-en="🔒 Compliance" data-ru="🔒 Регуляторный барьер"></span>
-                    <div class="trend-title" data-en="Compliance as Market Barrier" data-ru="Соответствие как барьер"></div>
-                    <div class="trend-text" data-en="EUDR and RED III create 'regulatory filter' where traceability and ISCC certification are essential for EU markets." data-ru="EUDR и RED III создают фильтр, где прослеживаемость и ISCC обязательны для рынков ЕС."></div>
-                </div>
-                <div class="trend-card">
-                    <span class="trend-badge badge-bullish" data-en="🚛 Diversification" data-ru="🚛 Диверсификация"></span>
-                    <div class="trend-title" data-en="Strategic Logistics Diversification" data-ru="Логистическая диверсификация"></div>
-                    <div class="trend-text" data-en="Increased reliance on Trans-Caspian route (TITR) as critical response to geopolitical instability." data-ru="Рост зависимости от Транскаспийского маршрута (TITR) как реакции на геополитическую нестабильность."></div>
-                </div>
-            </div>
-        </div>
+  <div class="tagline">Vegetable Oils & Fats · Weekly</div>
+  <h1>Extended Weekly Update · 15 June 2026</h1>
+  <p style="font-size:13px;color:#cfd2dc;">
+    Reporting period: 7–14 June 2026 · Regions: EU‑27, UK, Balkans, Central Asia, Caucasus
+  </p>
 
-        <div class="section">
-            <div class="section-title" data-en="II. Pricing Dynamics" data-ru="II. Динамика цен"></div>
-            <div class="highlight-box">
-                <strong data-en="Physical Market (FOB, June 15, 2026):" data-ru="Физический рынок (FOB, 15.06.2026):"></strong>
-                <span data-en="Global downward pressure on prices due to record South American harvests and Indonesian regulatory changes." 
-                      data-ru="Глобальное понижающее давление из-за рекордных урожаев в Южной Америке и регуляторных изменений в Индонезии."></span>
-            </div>
-            
-            <div class="chart-wrapper"><canvas id="cpoChart"></canvas></div>
-            <table class="data-table">
-                <thead><tr><th data-en="Contract" data-ru="Контракт"></th><th data-en="Expiration" data-ru="Истечение"></th><th data-en="Price (RM/t)" data-ru="Цена (RM/т)"></th><th data-en="Change" data-ru="Δ"></th></tr></thead>
-                <tbody>
-                    <tr><td data-en="June 2026" data-ru="Июнь 2026"></td><td>2026-06-15</td><td>4,470</td><td><span class="price-change price-down">-1.11%</span></td></tr>
-                    <tr><td data-en="July 2026" data-ru="Июль 2026"></td><td>2026-07-15</td><td>4,435</td><td><span class="price-change price-down">-0.95%</span></td></tr>
-                </tbody>
-            </table>
+  <div class="lang-switch">
+    <button class="lang-btn active" data-lang="ru">RU</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+  </div>
 
-            <div class="chart-wrapper"><canvas id="priceChart"></canvas></div>
-            <table class="data-table">
-                <thead><tr><th data-en="Oil Type" data-ru="Тип масла"></th><th data-en="Delivery Basis" data-ru="Базис"></th><th data-en="Price (USD/t)" data-ru="Цена (USD/т)"></th></tr></thead>
-                <tbody>
-                    <tr><td><strong data-en="Crude Palm Oil" data-ru="Сырое пальмовое"></strong></td><td data-en="FOB Malaysia" data-ru="FOB Малайзия"></td><td>$980 – $1,020</td></tr>
-                    <tr><td data-en="Soybean Oil" data-ru="Соевое"></td><td data-en="FOB Brazil/Argentina" data-ru="FOB Бразилия/Аргентина"></td><td>$1,580 – $1,620</td></tr>
-                    <tr><td data-en="Sunflower Oil" data-ru="Подсолнечное"></td><td data-en="FOB Black Sea" data-ru="FOB Черное море"></td><td>$1,300 – $1,350</td></tr>
-                    <tr><td data-en="Rapeseed Oil" data-ru="Рапсовое"></td><td data-en="FOB Rotterdam" data-ru="FOB Роттердам"></td><td>$1,310 – $1,340</td></tr>
-                </tbody>
-            </table>
-            <div class="highlight-box">
-                <strong data-en="POGO Spread:" data-ru="Спред POGO:"></strong>
-                <span data-en="Remains in discount zone at -$21.90, stimulating HVO feedstock purchases post-Malaysia B15 launch." 
-                      data-ru="Остается в зоне дисконта -$21.90, стимулируя закупки сырья для HVO после запуска B15."></span>
-            </div>
-        </div>
+  <!-- RU BLOCK -->
+  <div class="lang-block active" id="lang-ru">
 
-        <div class="section">
-            <div class="section-title" data-en="III. Regional Analysis" data-ru="III. Региональный анализ"></div>
-            <div class="region-grid">
-                <div class="region-card">
-                    <h3 data-en="🇩🇪 Germany" data-ru="🇩🇪 Германия"></h3>
-                    <p data-en="Key HVO consumer. Stable acreage. Growing demand for UCO & technical fats. Trend towards cold-pressed oils." data-ru="Ключевой потребитель HVO. Стабильные площади. Рост спроса на UCO и тех. жиры. Тренд на масла холодного отжима."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇳🇱 Netherlands" data-ru="🇳🇱 Нидерланды"></h3>
-                    <p data-en="Primary EU logistics hub. Active EUDR preparation. Rising non-GMO demand requiring LATAM/SEA compliance." data-ru="Основной хаб ЕС. Подготовка к EUDR. Рост спроса на non-GMO, требующий соответствия поставщиков."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇬🇧 United Kingdom" data-ru="🇬🇧 Великобритания"></h3>
-                    <p data-en="Rapeseed acreage +14-15% (2026/27). Output >1M tonnes. RTFO limits food-grade oils in biofuel to 3%." data-ru="Площади рапса +14-15%. Производство >1 млн т. RTFO ограничивает пищевые масла в биотопливе до 3%."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇮🇹 Italy" data-ru="🇮🇹 Италия"></h3>
-                    <p data-en="Transition to waste-based feedstocks (UCO, residues) per RED III. Reducing reliance on food-grade palm oil." data-ru="Переход на сырье из отходов (UCO) по RED III. Снижение зависимости от пищевого пальмового масла."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇵🇱 Poland" data-ru="🇵🇱 Польша"></h3>
-                    <p data-en="June rain improved winter rapeseed outlook. Yield recovery projected, cautious on input cost fluctuations." data-ru="Июньские дожди улучшили прогноз по рапсу. Прогнозируется восстановление урожайности."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇨🇿 Czech Republic" data-ru="🇨🇿 Чехия"></h3>
-                    <p data-en="Stricter spread labeling. Retail chains segregating vegetable spreads from animal butter for transparency." data-ru="Строгая маркировка спредов. Ритейлеры разделяют растительные и животные жиры на полках."></p>
-                </div>
-            </div>
-        </div>
+    <h2>I. ОБЗОР НЕДЕЛИ (EXECUTIVE SUMMARY)</h2>
 
-        <div class="section">
-            <div class="section-title" data-en="IV. Black Sea & CA/Caucasus" data-ru="IV. Черное море и ЦА/Кавказ"></div>
-            <div class="highlight-box">
-                <strong data-en="EU-27 Oilseed (2026/27):" data-ru="Масличные ЕС-27 (2026/27):"></strong>
-                <span data-en="Projected 32.3M tonnes (+3.3%). Domestic processing up, crude import dependence -25% vs 5-yr avg." 
-                      data-ru="Прогноз 32,3 млн т (+3,3%). Внутренняя переработка растет, зависимость от импорта сырья -25%."></span>
-            </div>
-            <div class="region-grid">
-                <div class="region-card">
-                    <h3 data-en="🇺🇦 Ukraine" data-ru="🇺🇦 Украина"></h3>
-                    <p><strong data-en="Prod:" data-ru="Произв.:"></strong> 13.5M t sunflower (+23%)<br>
-                    <strong data-en="Export:" data-ru="Экспорт:"></strong> 5.1M t oil (+16.6%)<br>
-                    <span data-en="Maintaining global exporter status via maritime corridors." data-ru="Сохранение статуса глобального экспортера через морские коридоры."></span></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇷🇺 Russia" data-ru="🇷🇺 Россия"></h3>
-                    <p><strong data-en="Prod:" data-ru="Произв.:"></strong> 19.2M t sunflower (+10%)<br>
-                    <strong data-en="Duty:" data-ru="Пошлина:"></strong> 1,337.5 RUB/t<br>
-                    <span data-en="Diversifying exports to India/China. 'Damper' limits crude outflows." data-ru="Диверсификация в Индию/Китай. 'Демпфер' ограничивает вывоз сырья."></span></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇰🇿 Kazakhstan" data-ru="🇰🇿 Казахстан"></h3>
-                    <p data-en="Record revenues ~$963M. First Aktau marine shipments (2026). Shift to finished oil/meal exports, focus on China/CA." data-ru="Доходы ~$963 млн. Первые отгрузки из Актау (2026). Переход к экспорту готового масла/шрота."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇺🇿 Uzbekistan" data-ru="🇺🇿 Узбекистан"></h3>
-                    <p data-en="Q1 2026 refined output +11%. Adopting energy-saving tech & extraction optimization for climate adaptation." data-ru="Q1 2026 выпуск раф. масла +11%. Внедрение энергосберегающих технологий экстракции."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇦🇿 Azerbaijan" data-ru="🇦🇿 Азербайджан"></h3>
-                    <p data-en="Strong agri-export growth H1 2026. Utilizing capacities to reduce import dependence on food fats." data-ru="Рост агроэкспорта в H1 2026. Использование мощностей для снижения импорта пищевых жиров."></p>
-                </div>
-                <div class="region-card">
-                    <h3 data-en="🇬🇪 Georgia" data-ru="🇬🇪 Грузия"></h3>
-                    <p data-en="Key transit hub. Significant growth in oil transshipment via Kulevi port. Integrating into global chains." data-ru="Ключевой транзитный хаб. Рост перевалки через порт Кулеви. Интеграция в глобальные цепочки."></p>
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title" data-en="V. Regulatory & Logistics" data-ru="V. Регуляторика и Логистика"></div>
-            <div class="highlight-box">
-                <strong data-en="EUDR Deadlines:" data-ru="Сроки EUDR:"></strong>
-                <span data-en="Large: Dec 30, 2026 | SMEs: Jun 30, 2027. Geolocation & ISCC mandatory for EU access." 
-                      data-ru="Крупные: 30.12.2026 | МСП: 30.06.2027. Геолокация и ISCC обязательны для доступа в ЕС."></span>
-            </div>
-
-            <div class="logistics-grid">
-                <div class="logistics-card primary">
-                    <h3 data-en="🚛 TITR (Middle Corridor)" data-ru="🚛 TITR (Средний коридор)"></h3>
-                    <div class="logistics-label" data-en="TRANSIT TIME" data-ru="ВРЕМЯ ТРАНЗИТА"></div>
-                    <div class="logistics-metric">15-19 d</div>
-                    <div class="logistics-label" data-en="FREIGHT RATE" data-ru="ФРАХТ"></div>
-                    <div class="logistics-metric">$3.5k-4.5k</div>
-                    <div class="logistics-note" data-en="Standard insurance. Risk: Customs delays." data-ru="Стандартное страхование. Риск: Таможня."></div>
-                </div>
-                <div class="logistics-card">
-                    <h3 data-en="🚢 Black Sea Route" data-ru="🚢 Черноморский маршрут"></h3>
-                    <div class="logistics-label" data-en="TRANSIT TIME" data-ru="ВРЕМЯ ТРАНЗИТА"></div>
-                    <div class="logistics-metric">37-45 d</div>
-                    <div class="logistics-label" data-en="FREIGHT RATE" data-ru="ФРАХТ"></div>
-                    <div class="logistics-metric">$10,000</div>
-                    <div class="logistics-note" data-en="1% hull premium. Risk: UAVs, mines." data-ru="Премия 1% корпуса. Риск: БПЛА, мины."></div>
-                </div>
-            </div>
-            <div class="highlight-box">
-                <strong data-en="✅ Digitalization:" data-ru="✅ Цифровизация:"></strong>
-                <span data-en="April 24, 2026 roadmap successfully mitigated delays at Aktau/Baku via electronic data exchange." 
-                      data-ru="Дорожная карта от 24.04.2026 смягчила задержки в Актау/Баку через электронный обмен данными."></span>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p data-en="© 2026 Market Intelligence Group" data-ru="© 2026 Аналитическая группа"></p>
-            <p style="margin-top:4px; opacity:0.6;" data-en="Sources: USDA, EC DG AGRI, National Stats, Industry Experts" data-ru="Источники: USDA, EC DG AGRI, Нац. статистика, Эксперты отрасли"></p>
-        </div>
+    <div class="card">
+      <div class="card-title">Ключевые драйверы 7–14 июня 2026</div>
+      <ul class="card-list">
+        <li><b>Коррекция цен</b>: избыток предложения из Южной Америки и активный экспорт из Азии давят на котировки пальмового и соевого масла. [file:66]</li>
+        <li><b>Логистическая премия</b>: в Черноморском регионе сохраняются высокие стоимости фрахта и страховки, создавая разрыв между ценой сырья и готовой продукции. [file:66]</li>
+        <li><b>Индустриальный сдвиг в ЦА и на Кавказе</b>: от простой переработки к глубокой интеграции в глобальные цепочки (рафинация, шрот, экспорт). [file:66]</li>
+        <li><b>EUDR / RED III как «регуляторный фильтр»</b>: доступ к премиальным рынкам ЕС возможен только при полной трассируемости и сертификации (ISCC и др.). [file:66][web:25]</li>
+        <li><b>Диверсификация маршрутов</b>: рост значения Транскаспийского коридора и TITR на фоне геополитической нестабильности традиционных морских путей. [file:66][web:50]</li>
+      </ul>
     </div>
 
-    <script>
-        let currentLang = 'en';
-        
-        function switchLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('[data-en][data-ru]').forEach(el => {
-                el.textContent = el.getAttribute(`data-${lang}`);
-            });
-            updateCharts(lang);
-        }
-        
-        Chart.defaults.color = '#9aa0a6';
-        Chart.defaults.borderColor = '#2a2d35';
-        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif';
+    <h2>II. ЦЕНЫ И КОНКУРЕНЦИЯ МАСЕЛ</h2>
 
-        const cpoChart = new Chart(document.getElementById('cpoChart'), {
-            type: 'line',
-            data: {
-                labels: ['Jun 15', 'Jul 15'],
-                datasets: [{
-                    label: 'CPO (RM/t)',
-                    data: [4470, 4435],
-                    borderColor: '#718096',
-                    backgroundColor: 'rgba(113,128,150,0.1)',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#181a1f',
-                    pointBorderColor: '#9aa0a6',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { labels: { color: '#e8eaed', font: { size: 11 } } } },
-                scales: { y: { min: 4400, max: 4500, grid: { color: '#1f2228' }, ticks: { color: '#9aa0a6' } }, x: { grid: { display: false } } }
-            }
-        });
+    <h3>1. Котировки CPO (Bursa Malaysia)</h3>
+    <p>По состоянию на 15 июня 2026 г. фьючерсы CPO демонстрируют умеренное снижение на фоне рекордных урожаев в Южной Америке и изменений экспортной политики в Индонезии. [file:66]</p>
 
-        const priceChart = new Chart(document.getElementById('priceChart'), {
-            type: 'bar',
-            data: {
-                labels: ['Palm', 'Soybean', 'Sunflower', 'Rapeseed'],
-                datasets: [{
-                    label: 'USD/t',
-                    data: [1000, 1600, 1325, 1325],
-                    backgroundColor: ['#4a5568', '#718096', '#9aa0a6', '#c5cad1'],
-                    borderRadius: 4,
-                    borderSkipped: false
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { grid: { color: '#1f2228' }, ticks: { color: '#9aa0a6', callback: v => '$'+v } }, x: { grid: { display: false }, ticks: { color: '#9aa0a6' } } }
-            }
-        });
-        
-        function updateCharts(lang) {
-            cpoChart.data.datasets[0].label = lang === 'ru' ? 'CPO (RM/т)' : 'CPO (RM/t)';
-            priceChart.data.datasets[0].label = lang === 'ru' ? 'USD/т' : 'USD/t';
-            priceChart.data.labels = lang === 'ru' ? ['Пальмовое', 'Соевое', 'Подсолнечное', 'Рапсовое'] : ['Palm', 'Soybean', 'Sunflower', 'Rapeseed'];
-            cpoChart.update(); priceChart.update();
-        }
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Месяц контракта</th>
+            <th>Дата экспирации</th>
+            <th>Цена (RM/т)</th>
+            <th>Дневн. изм.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>June 2026</td>
+            <td>2026‑06‑15</td>
+            <td>4,470</td>
+            <td>−1.11%</td>
+          </tr>
+          <tr>
+            <td>July 2026</td>
+            <td>2026‑07‑15</td>
+            <td>4,435</td>
+            <td>−0.95%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:#cfd2dc;">Спот на юге Малайзии снижается под давлением избытка предложения и слабого энергетического спроса. [file:66]</p>
 
-        if (window.Telegram && window.Telegram.WebApp) {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-        }
-    </script>
+    <h3>2. Таблица: сравнительный анализ цен на растительные масла</h3>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Тип масла</th>
+            <th>База поставки (июнь 2026)</th>
+            <th>Текущая цена (USD/т)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Crude Palm Oil (CPO)</td>
+            <td>FOB Malaysia</td>
+            <td>980–1 020</td>
+          </tr>
+          <tr>
+            <td>Soybean Oil</td>
+            <td>FOB Brazil / Argentina</td>
+            <td>1 580–1 620</td>
+          </tr>
+          <tr>
+            <td>Sunflower Oil</td>
+            <td>FOB Black Sea (Novorossiysk)</td>
+            <td>1 300–1 350</td>
+          </tr>
+          <tr>
+            <td>Rapeseed Oil</td>
+            <td>FOB Rotterdam</td>
+            <td>1 310–1 340</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:#cfd2dc;">
+      Palm остаётся самым дешёвым ресурсом для пищепрома и HVO, тогда как соевое и рапсовое масла торгуются с высокой премией. [file:66][web:42]
+    </p>
+    <p><span class="badge">POGO −21.90 USD/t</span> — спред в зоне дисконта стимулирует закупки palm‑feedstock для европейских HVO‑производителей после запуска B15 в Малайзии. [file:66]</p>
+
+    <h2>III. РЕГИОНЫ ЕВРОПЫ</h2>
+
+    <div class="section-label">Западная и Северная Европа</div>
+    <p><b>Германия:</b> ключевой потребитель растительных масел для HVO; интерес к UCO и техническим жирам. Площади под масличными стабильны, в food‑сегменте растёт спрос на холодный отжим и органику. [file:66]</p>
+    <p><b>Нидерланды:</b> главный логистический и перерабатывающий хаб ЕС; импортеры адаптируют контракты под EUDR и усиливают требования к трассируемости и non‑GMO. [file:66][web:25]</p>
+    <p><b>Великобритания:</b> посевы рапса восстанавливаются на 14–15% г/г; RTFO ограничивает использование пищевых масел в био‑топливе, смещая рапсовое масло обратно в пищу и корма. [file:66]</p>
+    <p><b>Франция, Бельгия, Ирландия</b> усиливают локальные цепочки и контроль качества в логистических кластерах (Антверпен, ирландские порты), минимизируя логистические риски. [file:66]</p>
+
+    <div class="section-label">Южная, Центральная и Восточная Европа</div>
+    <p><b>Италия:</b> переход на отходы и UCO в соответствии с RED III; роль пищевого palm oil в био‑топливе падает, но остаётся в нишах. [file:66]</p>
+    <p><b>Польша:</b> осадки в начале июня улучшили перспективы озимого рапса после майской засухи; агросектор стабилизируется, но чувствителен к росту издержек. [file:66]</p>
+    <p><b>Чехия:</b> ужесточаются требования к классификации и маркировке намазываемых жиров и смесей; ритейлера вынуждают жёстко разделять растительные и животные жиры на полке. [file:66]</p>
+    <p><b>Эстония, Греция:</b> ориентир на региональные поставки, ограниченные собственные мощности, рост роли гармонизированной логистики и локального производства подсолнечника. [file:66]</p>
+
+    <h2>IV. ЧЕРНОМОРЬЕ, ЦЕНТРАЛЬНАЯ АЗИЯ, КАВКАЗ</h2>
+
+    <p><b>Украина:</b> прогноз по подсолнечнику 13.5 млн т (+23% г/г), экспортный потенциал подсолнечного масла 5.1 млн т. [file:66]</p>
+    <p><b>Россия:</b> урожай подсолнечника 19.2 млн т, производство масла 7.52 млн т; экспортные пошлины остаются инструментом регулирования внутренних цен. [file:66]</p>
+
+    <div class="card">
+      <div class="card-title">Центральная Азия и Кавказ</div>
+      <ul class="card-list">
+        <li><b>Казахстан:</b> рекордные экспортные доходы от масложировой продукции (~963 млн USD за 4 года); запуск прямых отгрузок масла через порт Актау по Каспию. [file:66][web:44][web:52]</li>
+        <li><b>Узбекистан:</b> рост выпуска рафинированного масла >11% в 1кв 2026; модернизация и энергосбережение в отрасли. [file:66]</li>
+        <li><b>Киргизия:</b> самообеспеченность растительным маслом превышает 56% благодаря расширению переработки и новым сортам. [file:66]</li>
+        <li><b>Таджикистан, Туркменистан:</b> высокая импортозависимость (Таджикистан) и доминирование госрегулирования (Туркменистан) при ограниченной открытой статистике. [file:66]</li>
+        <li><b>Азербайджан, Грузия:</b> рост ненефтяного АПК и транзитной роли портов (включая Кулеви) в региональной логистике масел и жиров. [file:66][web:50]</li>
+      </ul>
+    </div>
+
+    <h2>V. РЕГУЛЯТОРНАЯ СРЕДА (EUDR, RED III)</h2>
+    <p>EUDR после пакета упрощения (май 2026) устанавливает дедлайны: 30.12.2026 для крупных/средних операторов и 30.06.2027 для МСП. Требуется геолокация каждого участка и доказательство «deforestation‑free» по цепочке поставок (включая соевые и palm‑деривативы). [file:66][web:25]</p>
+    <p>RED III ужесточает критерии устойчивости для био‑топлива; новые лимиты по MOAH/MOSH в пищевых маслах и жирах требуют более жёсткого контроля вспомогательных веществ и упаковки. [file:66]</p>
+
+    <h2>VI. ЛОГИСТИКА И КОРИДОРЫ</h2>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>TITR (Middle Corridor)</th>
+            <th>Черноморский маршрут</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Транзит Азия–ЕС</td>
+            <td>15–19 дней (рекорд)</td>
+            <td>37–45 дней</td>
+          </tr>
+          <tr>
+            <td>Фрахт (USD/FEU)</td>
+            <td>3 500–4 500</td>
+            <td>~10 000 (Ocean Spot)</td>
+          </tr>
+          <tr>
+            <td>Страхование</td>
+            <td>Стандарт, без war‑risk</td>
+            <td>War‑risk до 1% стоимости судна</td>
+          </tr>
+          <tr>
+            <td>Ключевые риски</td>
+            <td>Таможенные заторы на границах</td>
+            <td>БПЛА, мины, закрытие портов</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Цифровизация TITR (единые электронные декларации, обмен данными Казахстан–Азербайджан–Грузия) уже снижает задержки при перевалке контейнеров. [file:66][web:50]</p>
+
+  </div><!-- /RU -->
+
+  <!-- EN BLOCK -->
+  <div class="lang-block" id="lang-en">
+
+    <h2>I. WEEKLY OVERVIEW (EXECUTIVE SUMMARY)</h2>
+
+    <div class="card">
+      <div class="card-title">Key Drivers · 7–14 June 2026</div>
+      <ul class="card-list">
+        <li><b>Price correction:</b> oversupply from South America and active Asian exports pressure palm and soybean oil prices. [file:66]</li>
+        <li><b>Logistics risk premium:</b> elevated freight and insurance costs in the Black Sea region widen the gap between raw material and finished product prices. [file:66]</li>
+        <li><b>Industrial shift in Central Asia & Caucasus:</b> from basic processing toward deeper integration into global value chains (refined oil, meal, exports). [file:66]</li>
+        <li><b>Compliance as a filter:</b> EUDR and RED III act as a regulatory gate; traceability and ISCC‑type certification are prerequisites for EU market access. [file:66][web:25]</li>
+        <li><b>Route diversification:</b> growing reliance on Trans‑Caspian and Middle Corridor routes amid instability in traditional maritime channels. [file:66][web:50]</li>
+      </ul>
+    </div>
+
+    <h2>II. PRICING & COMPETITIVE POSITION</h2>
+
+    <h3>1. CPO Futures (Bursa Malaysia)</h3>
+    <p>As of 15 June 2026, CPO futures show a mild downtrend, reflecting record South American harvests and Indonesian policy changes. [file:66]</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Contract</th>
+            <th>Expiry</th>
+            <th>Price (RM/t)</th>
+            <th>Daily change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>June 2026</td>
+            <td>2026‑06‑15</td>
+            <td>4,470</td>
+            <td>−1.11%</td>
+          </tr>
+          <tr>
+            <td>July 2026</td>
+            <td>2026‑07‑15</td>
+            <td>4,435</td>
+            <td>−0.95%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:#cfd2dc;">Physical spot in Southern Malaysia is softening under combined pressure from the energy sector and oversupply. [file:66]</p>
+
+    <h3>2. Table: Comparative Analysis of Vegetable Oil Prices</h3>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Oil type</th>
+            <th>Delivery basis (June 2026)</th>
+            <th>Current price (USD/t)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Crude Palm Oil (CPO)</td>
+            <td>FOB Malaysia</td>
+            <td>980–1,020</td>
+          </tr>
+          <tr>
+            <td>Soybean Oil</td>
+            <td>FOB Brazil / Argentina</td>
+            <td>1,580–1,620</td>
+          </tr>
+          <tr>
+            <td>Sunflower Oil</td>
+            <td>FOB Black Sea (Novorossiysk)</td>
+            <td>1,300–1,350</td>
+          </tr>
+          <tr>
+            <td>Rapeseed Oil</td>
+            <td>FOB Rotterdam</td>
+            <td>1,310–1,340</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:#cfd2dc;">
+      Palm remains the lowest‑cost option for both food and HVO, while soybean and rapeseed maintain a sizeable premium. [file:66][web:42]
+    </p>
+    <p><span class="badge">POGO −21.90 USD/t</span> — the discount zone supports palm‑based feedstock purchases by EU HVO producers immediately after Malaysia’s B15 launch. [file:66]</p>
+
+    <h2>III. EUROPEAN REGIONAL MARKETS</h2>
+
+    <div class="section-label">Western & Northern Europe</div>
+    <p><b>Germany:</b> key HVO consumer of vegetable oils; strong focus on UCO and technical fats. Oilseed acreage is stable; food sector shifts toward cold‑pressed and organic oils. [file:66]</p>
+    <p><b>Netherlands:</b> Europe’s main logistics and processing hub; importers adapt contracts for EUDR and raise requirements for traceability and non‑GMO. [file:66][web:25]</p>
+    <p><b>United Kingdom:</b> rapeseed acreage recovering by 14–15% y/y; RTFO caps food‑grade oils in biofuels, redirecting rapeseed oil back to food and feed. [file:66]</p>
+    <p><b>France, Belgium, Ireland</b> emphasise local supply chain consolidation and quality management in logistics clusters (e.g., Antwerp) to mitigate logistics risk. [file:66]</p>
+
+    <div class="section-label">Southern, Central & Eastern Europe</div>
+    <p><b>Italy:</b> accelerating transition to waste‑based feedstocks in line with RED III; reliance on food‑grade palm oil in biofuels is declining but remains in specific niches. [file:66]</p>
+    <p><b>Poland:</b> early‑June rainfall improved winter rapeseed conditions after May drought; outlook is stabilising, yet cost inflation remains a concern. [file:66]</p>
+    <p><b>Czech Republic:</b> recent decree amendments tighten classification and labelling rules for spreadable fats and mixed products; retailers increasingly segregate plant‑based spreads from butter at shelf level. [file:66]</p>
+    <p><b>Estonia & Greece:</b> small domestic processing base, high dependence on regional imports and harmonised logistics; Greece explores biofuel‑based marine bunkering and supports local sunflower cultivation. [file:66]</p>
+
+    <h2>IV. BLACK SEA, CENTRAL ASIA & CAUCASUS</h2>
+
+    <p><b>Ukraine:</b> sunflower output in 2026/27 projected at 13.5 M t (+23% y/y); sunflower oil production may reach 5.63 M t, with export potential of 5.1 M t. [file:66]</p>
+    <p><b>Russia:</b> sunflower production forecast at 19.2 M t; sunflower oil output at 7.52 M t; export duties remain key to stabilising domestic prices and redirect part of value‑added to domestic processors. [file:66]</p>
+
+    <div class="card">
+      <div class="card-title">Central Asia & Caucasus Highlights</div>
+      <ul class="card-list">
+        <li><b>Kazakhstan:</b> strong export revenues (~963 M USD over four years); first direct vegetable oil shipments from Aktau across the Caspian Sea launched in 2026. [file:66][web:44][web:52]</li>
+        <li><b>Uzbekistan:</b> refined vegetable oil output up >11% y/y in Q1 2026; active implementation of energy‑saving technologies in processing plants. [file:66]</li>
+        <li><b>Kyrgyzstan:</b> self‑sufficiency in vegetable oils now above 56% driven by expanded processing and new high‑yielding oilseed varieties. [file:66]</li>
+        <li><b>Tajikistan, Turkmenistan:</b> high reliance on imports (Tajikistan) and state‑controlled agri policy (Turkmenistan); limited transparency on external trade volumes. [file:66]</li>
+        <li><b>Azerbaijan, Georgia:</b> non‑oil sectors show solid growth; ports (incl. Kulevi) integrate deeper into regional transit for oils and fats. [file:66][web:50]</li>
+      </ul>
+    </div>
+
+    <h2>V. REGULATORY OUTLOOK (EUDR, RED III)</h2>
+    <p>EUDR, following the May 2026 simplification package, sets compliance deadlines of 30 Dec 2026 for large/medium operators and 30 Jun 2027 for SMEs; geolocation and “deforestation‑free” proof are required for each relevant plot and supply chain segment. [file:66][web:25]</p>
+    <p>RED III tightens sustainability criteria for biofuels; new MOAH/MOSH limits in food oils and fats trigger stricter control of processing aids and packaging. [file:66]</p>
+
+    <h2>VI. LOGISTICS & SUPPLY SECURITY</h2>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>TITR (Middle Corridor)</th>
+            <th>Black Sea Route</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Transit Asia–EU</td>
+            <td>15–19 days (record runs)</td>
+            <td>37–45 days</td>
+          </tr>
+          <tr>
+            <td>Freight (USD/FEU)</td>
+            <td>3,500–4,500</td>
+            <td>~10,000 (Ocean Spot)</td>
+          </tr>
+          <tr>
+            <td>Insurance</td>
+            <td>Standard, no war‑risk</td>
+            <td>War‑risk premium up to 1% hull value</td>
+          </tr>
+          <tr>
+            <td>Key risks</td>
+            <td>Border customs bottlenecks</td>
+            <td>UAV strikes, sea mines, port closures</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Digitalisation roadmap for TITR (digital customs declarations, data exchange Kazakhstan–Azerbaijan–Georgia) is already mitigating dwell times at Aktau and Baku ports. [file:66][web:50]</p>
+
+  </div><!-- /EN -->
+
+</div>
+
+<script>
+  const buttons = document.querySelectorAll('.lang-btn');
+  const blocks = {
+    ru: document.getElementById('lang-ru'),
+    en: document.getElementById('lang-en')
+  };
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.dataset.lang;
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      Object.keys(blocks).forEach(k => {
+        blocks[k].classList.toggle('active', k === lang);
+      });
+    });
+  });
+</script>
+
 </body>
 </html>
