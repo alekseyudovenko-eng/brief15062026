@@ -2,113 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0e1a">
-    <title>Vegetable Oils & Fats Market Report | June 2026</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Fats & Oils Market Intelligence Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* CRITICAL PAINT BLOCK - Гарантирует мгновенное отображение текста */
-        html, body {
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #0a0e1a !important;
-            color: #f9fafb !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-            -webkit-font-smoothing: antialiased !important;
-            -moz-osx-font-smoothing: grayscale !important;
-            -webkit-text-size-adjust: 100% !important;
-            line-height: 1.6;
-            font-size: 14px;
-            opacity: 1 !important;
-            visibility: visible !important;
-            overflow-x: hidden;
-            transform: translateZ(0); /* Форсирует GPU-рендеринг в WebView */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafafa;
+            color: #09090b;
         }
 
-        .container { max-width: 920px; margin: 0 auto; padding: 16px; }
-        
-        .header {
-            background: #111827;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            border-top: 3px solid #3b82f6;
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+            min-height: 300px;
         }
-        .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; margin: 0; }
-        .header-meta { text-align: right; }
-        .header-sub { color: #9ca3af; font-size: 13px; margin-bottom: 4px; }
-        .header-date { color: #6b7280; font-size: 12px; font-weight: 500; }
-        
-        .lang-switch {
-            display: flex; gap: 4px; background: #0a0e1a; padding: 3px; border-radius: 8px; border: 1px solid #374151; margin-top: 6px; justify-content: flex-end;
+
+        .nav-item {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
         }
-        .lang-btn {
-            background: transparent; border: none; color: #9ca3af; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s, color 0.2s;
+
+        .nav-item.active {
+            background-color: #27272a;
+            color: #ffffff;
+            font-weight: 600;
         }
-        .lang-btn.active { background: #3b82f6; color: #ffffff; }
 
-        .section { background: #111827; border: 1px solid #374151; border-radius: 12px; padding: 20px; margin-bottom: 18px; }
-        .section-title { font-size: 16px; font-weight: 700; color: #f9fafb; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #374151; display: flex; align-items: center; gap: 8px; }
-        .section-title::before { content: ''; width: 4px; height: 18px; background: #3b82f6; border-radius: 2px; }
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
 
-        .summary-box { background: #1f2937; border-left: 3px solid #3b82f6; padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 16px; color: #9ca3af; font-size: 13px; line-height: 1.6; }
-        .trends-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
-        .trend-card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 14px; }
-        .trend-card:hover { border-color: #3b82f6; }
-        .trend-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .badge-bearish { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-bullish { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-neutral { background: #374151; color: #9ca3af; border: 1px solid #374151; }
-        .trend-title { font-size: 13px; font-weight: 700; color: #f9fafb; margin-bottom: 4px; }
-        .trend-text { font-size: 12px; color: #9ca3af; line-height: 1.5; }
+        .view-section.active {
+            display: block;
+        }
 
-        .chart-wrapper { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 14px; margin: 16px 0; position: relative; height: 260px; }
-        .table-wrap { overflow-x: auto; margin: 14px 0; border-radius: 8px; border: 1px solid #374151; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 500px; }
-        th { background: #1f2937; color: #9ca3af; font-weight: 600; text-align: left; padding: 10px; border-bottom: 2px solid #374151; text-transform: uppercase; letter-spacing: 0.5px; font-size: 11px; }
-        td { padding: 10px; border-bottom: 1px solid #374151; color: #f9fafb; }
-        tbody tr:hover { background: #374151; }
-        .price-change { padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 11px; display: inline-block; }
-        .price-down { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .region-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
         
-        .highlight { background: #1f2937; border-left: 3px solid #3b82f6; padding: 12px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 13px; color: #9ca3af; }
-        .highlight strong { color: #f9fafb; }
+        .region-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
 
-        .regions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-top: 14px; }
-        .region-card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 14px; }
-        .region-card h3 { font-size: 14px; font-weight: 700; color: #f9fafb; margin-bottom: 6px; border-left: 2px solid #3b82f6; padding-left: 8px; }
-        .region-card p { font-size: 12px; color: #9ca3af; line-height: 1.6; }
-        .region-card strong { color: #f9fafb; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .logistics-compare { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 16px 0; }
-        .logistics-card { background: #1f2937; border: 1px solid #374151; border-radius: 10px; padding: 16px; text-align: center; }
-        .logistics-card.featured { border-color: #3b82f6; background: linear-gradient(180deg, rgba(59, 130, 246, 0.08) 0%, #1f2937 100%); position: relative; }
-        .logistics-card.featured::before { content: 'RECOMMENDED'; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); background: #3b82f6; color: #ffffff; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; }
-        .logistics-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: #f9fafb; }
-        .metric { margin: 10px 0; }
-        .metric-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .metric-value { font-size: 20px; font-weight: 700; color: #f9fafb; letter-spacing: -0.5px; }
-        .metric-note { font-size: 11px; color: #9ca3af; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #374151; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f4f4f5; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4d4d8; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1aa; 
+        }
 
-        .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 11px; border-top: 1px solid #374151; margin-top: 16px; }
-        
-        @media (max-width: 640px) {
-            .header { flex-direction: column; align-items: flex-start; }
-            .header-meta { text-align: left; }
-            .section { padding: 16px; }
-            .trends-grid, .regions-grid, .logistics-compare { grid-template-columns: 1fr; }
-            table { min-width: 100%; }
+        .bullet-point::before {
+            content: "•";
+            color: #71717a;
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+            margin-left: -1em;
         }
     </style>
+
+    <!-- Chosen Palette: Zinc Minimalist (Background: Zinc-50 #fafafa, Navigation: Zinc-900 #18181b, Borders: Zinc-200 #e4e4e7, Primary accents: Zinc-800 #27272a / Slate-600 #475569. No bright colors, completely corporate and strict.) -->
+    <!-- Application Structure Plan: A highly structured Single Page Application with dynamic localization. A minimalist navigation sidebar manages active state transitions between three key modules: 'Executive & Pricing', 'Regional Analysis' (including granular filters), and 'Regulatory Watch'. Language toggle (RU/EN) directly mutates the state and triggers global component re-renders (including Chart.js instances). All marketing claims and references to MPOC are eliminated. -->
+    <!-- Visualization & Content Choices: Time-series BMD Futures -> Goal: Compare/Trend -> Viz: Line Chart (Chart.js) with strict dark slate aesthetics. Categorical Oils -> Goal: Compare -> Viz: Bar Chart (Chart.js) with monochromatic neutral tones. Geopolitical/Acreage Data -> Goal: Organize -> Viz: Semantic CSS Grid Cards -> Interaction: Language state binding and filter controls. NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
 </head>
-<body>
+    
+    <body>
     <div class="container">
         <div class="header">
             <div>
